@@ -1,0 +1,4 @@
+NOMBRE          TIPODATO        VALOR           LONGITUD       
+nombre          string          -               -              
+num             integer         -               -              
+ape             string          -               -              

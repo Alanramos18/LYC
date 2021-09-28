@@ -1,0 +1,32 @@
+*/ Declaro dos variables porque... no hay porque /*
+dim [nombre, num] as [string, integer];
+
+num := 9;
+
+if(num > 8)
+{
+	DISPLAY "El numero es mayor";
+}
+else
+{
+	DISPLAY "El numero es menor";
+}
+
+while(num == 0 OR num == 5)
+{
+	if(num != 0)
+	{
+		num := 0;
+	}
+}
+
+for temp := 1 to 6 [2]
+	DISPLAY nombre;
+	
+	dim [ape] as [string];
+	
+	if(EQUMAX(1>1; [1, 2, temp]))
+	{
+		GET ape;
+	}
+next temp
