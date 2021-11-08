@@ -1,0 +1,67 @@
+FOR
+
+for id = 3 to 5 [3]
+
+NEXT id
+
+<S> -> F
+<F> -> for id := cte to cte <step> <S> next id
+<step> -> [ ]
+<step> -> [ cte ]
+
+
+EQU
+equmax (10+12;[11,asd])
+
+<S> -> E
+<E> -> <equ> ( <EXPRESION> ; listaRqu )
+<equ> -> EQUMAX
+<equ> -> EQUMIN
+<listaRqu> -> [<V>]
+
+WHILE
+
+<S> -> string
+<S> -> W
+<W> -> while ( <EXPRESION> ) { <S> }
+<EXPRESION> -> id <CONDICION> <F>
+<CONDICION> -> ==
+<CONDICION> -> !=
+<CONDICION> -> >
+<CONDICION> -> <
+<F> -> id
+<F> -> cte
+
+
+
+IF
+
+if ( exp ) { s } else { s }
+
+<S> -> <I>
+<I> -> IF ( <EXPRESION> ) { <S> }
+<I> -> IF ( <EXPRESION> ) { <S> } ELSE { <S> }
+
+
+ASSIG
+
+a := 3
+
+<S> -> <A>
+<A> -> id := <F>
+
+DIM
+
+dim [a] AS [string]
+
+<S> -> <D>
+<D> -> dim <variables> as <tipos>
+<variables> -> [ <X> ]
+<tipos> -> [<listTipo>]
+<listTipo> -> <tipo>
+<listTipo> -> <listTipo>, <tipo>
+<tipo> -> integer
+<tipo> -> string
+<tipo> -> real
+<X> -> id
+<X> -> X, id 

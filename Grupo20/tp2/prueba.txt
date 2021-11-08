@@ -1,0 +1,29 @@
+num := 9;
+may := 18;
+men := 1;
+
+*/ Declaro dos variables porque... no hay porque /*
+dim [nombre, num] as [string, integer];
+
+if(num > 8)
+{
+	DISPLAY may;
+}
+else
+{
+	DISPLAY men;
+}
+
+while(num == 0 OR num == 5)
+{
+	num := 18;
+}
+
+for temp := 1 to 6 [2]
+	DISPLAY nombre;
+next temp
+
+if(EQUMAX(1+1; [1, 2, temp]))
+{
+	GET nombre;
+}

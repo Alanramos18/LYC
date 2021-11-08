@@ -1,0 +1,1238 @@
+Terminals unused in grammar
+
+   REA
+
+
+Gramática
+
+    0 $accept: prog $end
+
+    1 prog: lines
+
+    2 lines: line
+
+    3 $@1: /* vacío */
+
+    4 lines: line $@1 lines
+
+    5 line: W
+    6     | I
+    7     | A FIN
+    8     | DIS FIN
+    9     | GET ID FIN
+   10     | D FIN
+   11     | F
+
+   12 W: WHILE COMPARATION BODY
+
+   13 I: IF COMPARATION BODY
+
+   14 $@2: /* vacío */
+
+   15 I: IF COMPARATION BODY $@2 ELSE BODY
+
+   16 COMPARATION: PARAB COND PARCE
+
+   17 COND: CONDFINAL
+   18     | NOT CONDFINAL
+
+   19 $@3: /* vacío */
+
+   20 COND: CONDFINAL $@3 OR CONDFINAL
+
+   21 $@4: /* vacío */
+
+   22 COND: CONDFINAL $@4 AND CONDFINAL
+   23     | E
+
+   24 CONDFINAL: ID CONDITION V
+
+   25 CONDITION: OP_MAY
+   26          | OP_MEN
+   27          | OP_MAYIGU
+   28          | OP_MENIGU
+   29          | OP_IGU
+   30          | OP_DIST
+
+   31 $@5: /* vacío */
+
+   32 $@6: /* vacío */
+
+   33 BODY: CORAB $@5 lines $@6 CORCE
+
+   34 A: ID OP_AS V
+
+   35 DIS: DISPLAY STRING
+   36    | DISPLAY ID
+
+   37 D: DIM LISTAVARIABLE AS LISTATIPO
+
+   38 LISTAVARIABLE: CUAAB VARIABLES CUACE
+
+   39 VARIABLES: ID
+   40          | VARIABLES COMA ID
+
+   41 LISTATIPO: CUAAB TIPOS CUACE
+
+   42 TIPOS: TIPO
+   43      | TIPOS COMA TIPO
+
+   44 TIPO: STRINGT
+   45     | REAL
+   46     | INTEGER
+
+   47 $@7: /* vacío */
+
+   48 F: FOR ID OP_AS INT TO INT STEP $@7 lines NEXT ID
+
+   49 STEP: CUAAB CUACE
+   50     | CUAAB INT CUACE
+
+   51 E: EQU PARAB EXPRESIONEQU FIN LISTAEQU PARCE
+
+   52 EQU: EQUMAX
+   53    | EQUMIN
+
+   54 EXPRESIONEQU: INT SIGNO INT
+
+   55 SIGNO: MAS
+   56      | MENOS
+   57      | POR
+   58      | DIV
+
+   59 LISTAEQU: CUAAB ELEMENTOEQU CUACE
+
+   60 ELEMENTOEQU: V
+
+   61 $@8: /* vacío */
+
+   62 ELEMENTOEQU: V COMA $@8 ELEMENTOEQU
+
+   63 V: ID
+   64  | INT
+
+
+Terminales con las reglas donde aparecen
+
+$end (0) 0
+error (256)
+STRING (258) 35
+INT (259) 48 50 54 64
+ID (260) 9 24 34 36 39 40 48 63
+WHILE (261) 12
+PARAB (262) 16 51
+PARCE (263) 16 51
+CORAB (264) 33
+CORCE (265) 33
+OP_MAY (266) 25
+IF (267) 13 15
+ELSE (268) 15
+OP_AS (269) 34 48
+DIM (270) 37
+AS (271) 37
+COMA (272) 40 43 62
+STRINGT (273) 44
+INTEGER (274) 46
+REAL (275) 45
+CUAAB (276) 38 41 49 50 59
+CUACE (277) 38 41 49 50 59
+FOR (278) 48
+TO (279) 48
+NEXT (280) 48
+EQUMAX (281) 52
+EQUMIN (282) 53
+FIN (283) 7 8 9 10 51
+OP_MEN (284) 26
+OP_MAYIGU (285) 27
+OP_MENIGU (286) 28
+OP_IGU (287) 29
+OP_DIST (288) 30
+DISPLAY (289) 35 36
+GET (290) 9
+NOT (291) 18
+AND (292) 22
+OR (293) 20
+REA (294)
+MAS (295) 55
+MENOS (296) 56
+POR (297) 57
+DIV (298) 58
+
+
+No terminales con las reglas donde aparecen
+
+$accept (44)
+    en la izquierda: 0
+prog (45)
+    en la izquierda: 1, en la derecha: 0
+lines (46)
+    en la izquierda: 2 4, en la derecha: 1 4 33 48
+$@1 (47)
+    en la izquierda: 3, en la derecha: 4
+line (48)
+    en la izquierda: 5 6 7 8 9 10 11, en la derecha: 2 4
+W (49)
+    en la izquierda: 12, en la derecha: 5
+I (50)
+    en la izquierda: 13 15, en la derecha: 6
+$@2 (51)
+    en la izquierda: 14, en la derecha: 15
+COMPARATION (52)
+    en la izquierda: 16, en la derecha: 12 13 15
+COND (53)
+    en la izquierda: 17 18 20 22 23, en la derecha: 16
+$@3 (54)
+    en la izquierda: 19, en la derecha: 20
+$@4 (55)
+    en la izquierda: 21, en la derecha: 22
+CONDFINAL (56)
+    en la izquierda: 24, en la derecha: 17 18 20 22
+CONDITION (57)
+    en la izquierda: 25 26 27 28 29 30, en la derecha: 24
+BODY (58)
+    en la izquierda: 33, en la derecha: 12 13 15
+$@5 (59)
+    en la izquierda: 31, en la derecha: 33
+$@6 (60)
+    en la izquierda: 32, en la derecha: 33
+A (61)
+    en la izquierda: 34, en la derecha: 7
+DIS (62)
+    en la izquierda: 35 36, en la derecha: 8
+D (63)
+    en la izquierda: 37, en la derecha: 10
+LISTAVARIABLE (64)
+    en la izquierda: 38, en la derecha: 37
+VARIABLES (65)
+    en la izquierda: 39 40, en la derecha: 38 40
+LISTATIPO (66)
+    en la izquierda: 41, en la derecha: 37
+TIPOS (67)
+    en la izquierda: 42 43, en la derecha: 41 43
+TIPO (68)
+    en la izquierda: 44 45 46, en la derecha: 42 43
+F (69)
+    en la izquierda: 48, en la derecha: 11
+$@7 (70)
+    en la izquierda: 47, en la derecha: 48
+STEP (71)
+    en la izquierda: 49 50, en la derecha: 48
+E (72)
+    en la izquierda: 51, en la derecha: 23
+EQU (73)
+    en la izquierda: 52 53, en la derecha: 51
+EXPRESIONEQU (74)
+    en la izquierda: 54, en la derecha: 51
+SIGNO (75)
+    en la izquierda: 55 56 57 58, en la derecha: 54
+LISTAEQU (76)
+    en la izquierda: 59, en la derecha: 51
+ELEMENTOEQU (77)
+    en la izquierda: 60 62, en la derecha: 59 62
+$@8 (78)
+    en la izquierda: 61, en la derecha: 62
+V (79)
+    en la izquierda: 63 64, en la derecha: 24 34 60 62
+
+
+estado 0
+
+    0 $accept: . prog $end
+
+    ID       desplazar e ir al estado 1
+    WHILE    desplazar e ir al estado 2
+    IF       desplazar e ir al estado 3
+    DIM      desplazar e ir al estado 4
+    FOR      desplazar e ir al estado 5
+    DISPLAY  desplazar e ir al estado 6
+    GET      desplazar e ir al estado 7
+
+    prog   ir al estado 8
+    lines  ir al estado 9
+    line   ir al estado 10
+    W      ir al estado 11
+    I      ir al estado 12
+    A      ir al estado 13
+    DIS    ir al estado 14
+    D      ir al estado 15
+    F      ir al estado 16
+
+
+estado 1
+
+   34 A: ID . OP_AS V
+
+    OP_AS  desplazar e ir al estado 17
+
+
+estado 2
+
+   12 W: WHILE . COMPARATION BODY
+
+    PARAB  desplazar e ir al estado 18
+
+    COMPARATION  ir al estado 19
+
+
+estado 3
+
+   13 I: IF . COMPARATION BODY
+   15  | IF . COMPARATION BODY $@2 ELSE BODY
+
+    PARAB  desplazar e ir al estado 18
+
+    COMPARATION  ir al estado 20
+
+
+estado 4
+
+   37 D: DIM . LISTAVARIABLE AS LISTATIPO
+
+    CUAAB  desplazar e ir al estado 21
+
+    LISTAVARIABLE  ir al estado 22
+
+
+estado 5
+
+   48 F: FOR . ID OP_AS INT TO INT STEP $@7 lines NEXT ID
+
+    ID  desplazar e ir al estado 23
+
+
+estado 6
+
+   35 DIS: DISPLAY . STRING
+   36    | DISPLAY . ID
+
+    STRING  desplazar e ir al estado 24
+    ID      desplazar e ir al estado 25
+
+
+estado 7
+
+    9 line: GET . ID FIN
+
+    ID  desplazar e ir al estado 26
+
+
+estado 8
+
+    0 $accept: prog . $end
+
+    $end  desplazar e ir al estado 27
+
+
+estado 9
+
+    1 prog: lines .
+
+    $default  reduce usando la regla 1 (prog)
+
+
+estado 10
+
+    2 lines: line .
+    4      | line . $@1 lines
+
+    $end      reduce usando la regla 2 (lines)
+    CORCE     reduce usando la regla 2 (lines)
+    NEXT      reduce usando la regla 2 (lines)
+    $default  reduce usando la regla 3 ($@1)
+
+    $@1  ir al estado 28
+
+
+estado 11
+
+    5 line: W .
+
+    $default  reduce usando la regla 5 (line)
+
+
+estado 12
+
+    6 line: I .
+
+    $default  reduce usando la regla 6 (line)
+
+
+estado 13
+
+    7 line: A . FIN
+
+    FIN  desplazar e ir al estado 29
+
+
+estado 14
+
+    8 line: DIS . FIN
+
+    FIN  desplazar e ir al estado 30
+
+
+estado 15
+
+   10 line: D . FIN
+
+    FIN  desplazar e ir al estado 31
+
+
+estado 16
+
+   11 line: F .
+
+    $default  reduce usando la regla 11 (line)
+
+
+estado 17
+
+   34 A: ID OP_AS . V
+
+    INT  desplazar e ir al estado 32
+    ID   desplazar e ir al estado 33
+
+    V  ir al estado 34
+
+
+estado 18
+
+   16 COMPARATION: PARAB . COND PARCE
+
+    ID      desplazar e ir al estado 35
+    EQUMAX  desplazar e ir al estado 36
+    EQUMIN  desplazar e ir al estado 37
+    NOT     desplazar e ir al estado 38
+
+    COND       ir al estado 39
+    CONDFINAL  ir al estado 40
+    E          ir al estado 41
+    EQU        ir al estado 42
+
+
+estado 19
+
+   12 W: WHILE COMPARATION . BODY
+
+    CORAB  desplazar e ir al estado 43
+
+    BODY  ir al estado 44
+
+
+estado 20
+
+   13 I: IF COMPARATION . BODY
+   15  | IF COMPARATION . BODY $@2 ELSE BODY
+
+    CORAB  desplazar e ir al estado 43
+
+    BODY  ir al estado 45
+
+
+estado 21
+
+   38 LISTAVARIABLE: CUAAB . VARIABLES CUACE
+
+    ID  desplazar e ir al estado 46
+
+    VARIABLES  ir al estado 47
+
+
+estado 22
+
+   37 D: DIM LISTAVARIABLE . AS LISTATIPO
+
+    AS  desplazar e ir al estado 48
+
+
+estado 23
+
+   48 F: FOR ID . OP_AS INT TO INT STEP $@7 lines NEXT ID
+
+    OP_AS  desplazar e ir al estado 49
+
+
+estado 24
+
+   35 DIS: DISPLAY STRING .
+
+    $default  reduce usando la regla 35 (DIS)
+
+
+estado 25
+
+   36 DIS: DISPLAY ID .
+
+    $default  reduce usando la regla 36 (DIS)
+
+
+estado 26
+
+    9 line: GET ID . FIN
+
+    FIN  desplazar e ir al estado 50
+
+
+estado 27
+
+    0 $accept: prog $end .
+
+    $default  aceptar
+
+
+estado 28
+
+    4 lines: line $@1 . lines
+
+    ID       desplazar e ir al estado 1
+    WHILE    desplazar e ir al estado 2
+    IF       desplazar e ir al estado 3
+    DIM      desplazar e ir al estado 4
+    FOR      desplazar e ir al estado 5
+    DISPLAY  desplazar e ir al estado 6
+    GET      desplazar e ir al estado 7
+
+    lines  ir al estado 51
+    line   ir al estado 10
+    W      ir al estado 11
+    I      ir al estado 12
+    A      ir al estado 13
+    DIS    ir al estado 14
+    D      ir al estado 15
+    F      ir al estado 16
+
+
+estado 29
+
+    7 line: A FIN .
+
+    $default  reduce usando la regla 7 (line)
+
+
+estado 30
+
+    8 line: DIS FIN .
+
+    $default  reduce usando la regla 8 (line)
+
+
+estado 31
+
+   10 line: D FIN .
+
+    $default  reduce usando la regla 10 (line)
+
+
+estado 32
+
+   64 V: INT .
+
+    $default  reduce usando la regla 64 (V)
+
+
+estado 33
+
+   63 V: ID .
+
+    $default  reduce usando la regla 63 (V)
+
+
+estado 34
+
+   34 A: ID OP_AS V .
+
+    $default  reduce usando la regla 34 (A)
+
+
+estado 35
+
+   24 CONDFINAL: ID . CONDITION V
+
+    OP_MAY     desplazar e ir al estado 52
+    OP_MEN     desplazar e ir al estado 53
+    OP_MAYIGU  desplazar e ir al estado 54
+    OP_MENIGU  desplazar e ir al estado 55
+    OP_IGU     desplazar e ir al estado 56
+    OP_DIST    desplazar e ir al estado 57
+
+    CONDITION  ir al estado 58
+
+
+estado 36
+
+   52 EQU: EQUMAX .
+
+    $default  reduce usando la regla 52 (EQU)
+
+
+estado 37
+
+   53 EQU: EQUMIN .
+
+    $default  reduce usando la regla 53 (EQU)
+
+
+estado 38
+
+   18 COND: NOT . CONDFINAL
+
+    ID  desplazar e ir al estado 35
+
+    CONDFINAL  ir al estado 59
+
+
+estado 39
+
+   16 COMPARATION: PARAB COND . PARCE
+
+    PARCE  desplazar e ir al estado 60
+
+
+estado 40
+
+   17 COND: CONDFINAL .
+   20     | CONDFINAL . $@3 OR CONDFINAL
+   22     | CONDFINAL . $@4 AND CONDFINAL
+
+    AND       reduce usando la regla 21 ($@4)
+    OR        reduce usando la regla 19 ($@3)
+    $default  reduce usando la regla 17 (COND)
+
+    $@3  ir al estado 61
+    $@4  ir al estado 62
+
+
+estado 41
+
+   23 COND: E .
+
+    $default  reduce usando la regla 23 (COND)
+
+
+estado 42
+
+   51 E: EQU . PARAB EXPRESIONEQU FIN LISTAEQU PARCE
+
+    PARAB  desplazar e ir al estado 63
+
+
+estado 43
+
+   33 BODY: CORAB . $@5 lines $@6 CORCE
+
+    $default  reduce usando la regla 31 ($@5)
+
+    $@5  ir al estado 64
+
+
+estado 44
+
+   12 W: WHILE COMPARATION BODY .
+
+    $default  reduce usando la regla 12 (W)
+
+
+estado 45
+
+   13 I: IF COMPARATION BODY .
+   15  | IF COMPARATION BODY . $@2 ELSE BODY
+
+    ELSE      reduce usando la regla 14 ($@2)
+    $default  reduce usando la regla 13 (I)
+
+    $@2  ir al estado 65
+
+
+estado 46
+
+   39 VARIABLES: ID .
+
+    $default  reduce usando la regla 39 (VARIABLES)
+
+
+estado 47
+
+   38 LISTAVARIABLE: CUAAB VARIABLES . CUACE
+   40 VARIABLES: VARIABLES . COMA ID
+
+    COMA   desplazar e ir al estado 66
+    CUACE  desplazar e ir al estado 67
+
+
+estado 48
+
+   37 D: DIM LISTAVARIABLE AS . LISTATIPO
+
+    CUAAB  desplazar e ir al estado 68
+
+    LISTATIPO  ir al estado 69
+
+
+estado 49
+
+   48 F: FOR ID OP_AS . INT TO INT STEP $@7 lines NEXT ID
+
+    INT  desplazar e ir al estado 70
+
+
+estado 50
+
+    9 line: GET ID FIN .
+
+    $default  reduce usando la regla 9 (line)
+
+
+estado 51
+
+    4 lines: line $@1 lines .
+
+    $default  reduce usando la regla 4 (lines)
+
+
+estado 52
+
+   25 CONDITION: OP_MAY .
+
+    $default  reduce usando la regla 25 (CONDITION)
+
+
+estado 53
+
+   26 CONDITION: OP_MEN .
+
+    $default  reduce usando la regla 26 (CONDITION)
+
+
+estado 54
+
+   27 CONDITION: OP_MAYIGU .
+
+    $default  reduce usando la regla 27 (CONDITION)
+
+
+estado 55
+
+   28 CONDITION: OP_MENIGU .
+
+    $default  reduce usando la regla 28 (CONDITION)
+
+
+estado 56
+
+   29 CONDITION: OP_IGU .
+
+    $default  reduce usando la regla 29 (CONDITION)
+
+
+estado 57
+
+   30 CONDITION: OP_DIST .
+
+    $default  reduce usando la regla 30 (CONDITION)
+
+
+estado 58
+
+   24 CONDFINAL: ID CONDITION . V
+
+    INT  desplazar e ir al estado 32
+    ID   desplazar e ir al estado 33
+
+    V  ir al estado 71
+
+
+estado 59
+
+   18 COND: NOT CONDFINAL .
+
+    $default  reduce usando la regla 18 (COND)
+
+
+estado 60
+
+   16 COMPARATION: PARAB COND PARCE .
+
+    $default  reduce usando la regla 16 (COMPARATION)
+
+
+estado 61
+
+   20 COND: CONDFINAL $@3 . OR CONDFINAL
+
+    OR  desplazar e ir al estado 72
+
+
+estado 62
+
+   22 COND: CONDFINAL $@4 . AND CONDFINAL
+
+    AND  desplazar e ir al estado 73
+
+
+estado 63
+
+   51 E: EQU PARAB . EXPRESIONEQU FIN LISTAEQU PARCE
+
+    INT  desplazar e ir al estado 74
+
+    EXPRESIONEQU  ir al estado 75
+
+
+estado 64
+
+   33 BODY: CORAB $@5 . lines $@6 CORCE
+
+    ID       desplazar e ir al estado 1
+    WHILE    desplazar e ir al estado 2
+    IF       desplazar e ir al estado 3
+    DIM      desplazar e ir al estado 4
+    FOR      desplazar e ir al estado 5
+    DISPLAY  desplazar e ir al estado 6
+    GET      desplazar e ir al estado 7
+
+    lines  ir al estado 76
+    line   ir al estado 10
+    W      ir al estado 11
+    I      ir al estado 12
+    A      ir al estado 13
+    DIS    ir al estado 14
+    D      ir al estado 15
+    F      ir al estado 16
+
+
+estado 65
+
+   15 I: IF COMPARATION BODY $@2 . ELSE BODY
+
+    ELSE  desplazar e ir al estado 77
+
+
+estado 66
+
+   40 VARIABLES: VARIABLES COMA . ID
+
+    ID  desplazar e ir al estado 78
+
+
+estado 67
+
+   38 LISTAVARIABLE: CUAAB VARIABLES CUACE .
+
+    $default  reduce usando la regla 38 (LISTAVARIABLE)
+
+
+estado 68
+
+   41 LISTATIPO: CUAAB . TIPOS CUACE
+
+    STRINGT  desplazar e ir al estado 79
+    INTEGER  desplazar e ir al estado 80
+    REAL     desplazar e ir al estado 81
+
+    TIPOS  ir al estado 82
+    TIPO   ir al estado 83
+
+
+estado 69
+
+   37 D: DIM LISTAVARIABLE AS LISTATIPO .
+
+    $default  reduce usando la regla 37 (D)
+
+
+estado 70
+
+   48 F: FOR ID OP_AS INT . TO INT STEP $@7 lines NEXT ID
+
+    TO  desplazar e ir al estado 84
+
+
+estado 71
+
+   24 CONDFINAL: ID CONDITION V .
+
+    $default  reduce usando la regla 24 (CONDFINAL)
+
+
+estado 72
+
+   20 COND: CONDFINAL $@3 OR . CONDFINAL
+
+    ID  desplazar e ir al estado 35
+
+    CONDFINAL  ir al estado 85
+
+
+estado 73
+
+   22 COND: CONDFINAL $@4 AND . CONDFINAL
+
+    ID  desplazar e ir al estado 35
+
+    CONDFINAL  ir al estado 86
+
+
+estado 74
+
+   54 EXPRESIONEQU: INT . SIGNO INT
+
+    MAS    desplazar e ir al estado 87
+    MENOS  desplazar e ir al estado 88
+    POR    desplazar e ir al estado 89
+    DIV    desplazar e ir al estado 90
+
+    SIGNO  ir al estado 91
+
+
+estado 75
+
+   51 E: EQU PARAB EXPRESIONEQU . FIN LISTAEQU PARCE
+
+    FIN  desplazar e ir al estado 92
+
+
+estado 76
+
+   33 BODY: CORAB $@5 lines . $@6 CORCE
+
+    $default  reduce usando la regla 32 ($@6)
+
+    $@6  ir al estado 93
+
+
+estado 77
+
+   15 I: IF COMPARATION BODY $@2 ELSE . BODY
+
+    CORAB  desplazar e ir al estado 43
+
+    BODY  ir al estado 94
+
+
+estado 78
+
+   40 VARIABLES: VARIABLES COMA ID .
+
+    $default  reduce usando la regla 40 (VARIABLES)
+
+
+estado 79
+
+   44 TIPO: STRINGT .
+
+    $default  reduce usando la regla 44 (TIPO)
+
+
+estado 80
+
+   46 TIPO: INTEGER .
+
+    $default  reduce usando la regla 46 (TIPO)
+
+
+estado 81
+
+   45 TIPO: REAL .
+
+    $default  reduce usando la regla 45 (TIPO)
+
+
+estado 82
+
+   41 LISTATIPO: CUAAB TIPOS . CUACE
+   43 TIPOS: TIPOS . COMA TIPO
+
+    COMA   desplazar e ir al estado 95
+    CUACE  desplazar e ir al estado 96
+
+
+estado 83
+
+   42 TIPOS: TIPO .
+
+    $default  reduce usando la regla 42 (TIPOS)
+
+
+estado 84
+
+   48 F: FOR ID OP_AS INT TO . INT STEP $@7 lines NEXT ID
+
+    INT  desplazar e ir al estado 97
+
+
+estado 85
+
+   20 COND: CONDFINAL $@3 OR CONDFINAL .
+
+    $default  reduce usando la regla 20 (COND)
+
+
+estado 86
+
+   22 COND: CONDFINAL $@4 AND CONDFINAL .
+
+    $default  reduce usando la regla 22 (COND)
+
+
+estado 87
+
+   55 SIGNO: MAS .
+
+    $default  reduce usando la regla 55 (SIGNO)
+
+
+estado 88
+
+   56 SIGNO: MENOS .
+
+    $default  reduce usando la regla 56 (SIGNO)
+
+
+estado 89
+
+   57 SIGNO: POR .
+
+    $default  reduce usando la regla 57 (SIGNO)
+
+
+estado 90
+
+   58 SIGNO: DIV .
+
+    $default  reduce usando la regla 58 (SIGNO)
+
+
+estado 91
+
+   54 EXPRESIONEQU: INT SIGNO . INT
+
+    INT  desplazar e ir al estado 98
+
+
+estado 92
+
+   51 E: EQU PARAB EXPRESIONEQU FIN . LISTAEQU PARCE
+
+    CUAAB  desplazar e ir al estado 99
+
+    LISTAEQU  ir al estado 100
+
+
+estado 93
+
+   33 BODY: CORAB $@5 lines $@6 . CORCE
+
+    CORCE  desplazar e ir al estado 101
+
+
+estado 94
+
+   15 I: IF COMPARATION BODY $@2 ELSE BODY .
+
+    $default  reduce usando la regla 15 (I)
+
+
+estado 95
+
+   43 TIPOS: TIPOS COMA . TIPO
+
+    STRINGT  desplazar e ir al estado 79
+    INTEGER  desplazar e ir al estado 80
+    REAL     desplazar e ir al estado 81
+
+    TIPO  ir al estado 102
+
+
+estado 96
+
+   41 LISTATIPO: CUAAB TIPOS CUACE .
+
+    $default  reduce usando la regla 41 (LISTATIPO)
+
+
+estado 97
+
+   48 F: FOR ID OP_AS INT TO INT . STEP $@7 lines NEXT ID
+
+    CUAAB  desplazar e ir al estado 103
+
+    STEP  ir al estado 104
+
+
+estado 98
+
+   54 EXPRESIONEQU: INT SIGNO INT .
+
+    $default  reduce usando la regla 54 (EXPRESIONEQU)
+
+
+estado 99
+
+   59 LISTAEQU: CUAAB . ELEMENTOEQU CUACE
+
+    INT  desplazar e ir al estado 32
+    ID   desplazar e ir al estado 33
+
+    ELEMENTOEQU  ir al estado 105
+    V            ir al estado 106
+
+
+estado 100
+
+   51 E: EQU PARAB EXPRESIONEQU FIN LISTAEQU . PARCE
+
+    PARCE  desplazar e ir al estado 107
+
+
+estado 101
+
+   33 BODY: CORAB $@5 lines $@6 CORCE .
+
+    $default  reduce usando la regla 33 (BODY)
+
+
+estado 102
+
+   43 TIPOS: TIPOS COMA TIPO .
+
+    $default  reduce usando la regla 43 (TIPOS)
+
+
+estado 103
+
+   49 STEP: CUAAB . CUACE
+   50     | CUAAB . INT CUACE
+
+    INT    desplazar e ir al estado 108
+    CUACE  desplazar e ir al estado 109
+
+
+estado 104
+
+   48 F: FOR ID OP_AS INT TO INT STEP . $@7 lines NEXT ID
+
+    $default  reduce usando la regla 47 ($@7)
+
+    $@7  ir al estado 110
+
+
+estado 105
+
+   59 LISTAEQU: CUAAB ELEMENTOEQU . CUACE
+
+    CUACE  desplazar e ir al estado 111
+
+
+estado 106
+
+   60 ELEMENTOEQU: V .
+   62            | V . COMA $@8 ELEMENTOEQU
+
+    COMA  desplazar e ir al estado 112
+
+    $default  reduce usando la regla 60 (ELEMENTOEQU)
+
+
+estado 107
+
+   51 E: EQU PARAB EXPRESIONEQU FIN LISTAEQU PARCE .
+
+    $default  reduce usando la regla 51 (E)
+
+
+estado 108
+
+   50 STEP: CUAAB INT . CUACE
+
+    CUACE  desplazar e ir al estado 113
+
+
+estado 109
+
+   49 STEP: CUAAB CUACE .
+
+    $default  reduce usando la regla 49 (STEP)
+
+
+estado 110
+
+   48 F: FOR ID OP_AS INT TO INT STEP $@7 . lines NEXT ID
+
+    ID       desplazar e ir al estado 1
+    WHILE    desplazar e ir al estado 2
+    IF       desplazar e ir al estado 3
+    DIM      desplazar e ir al estado 4
+    FOR      desplazar e ir al estado 5
+    DISPLAY  desplazar e ir al estado 6
+    GET      desplazar e ir al estado 7
+
+    lines  ir al estado 114
+    line   ir al estado 10
+    W      ir al estado 11
+    I      ir al estado 12
+    A      ir al estado 13
+    DIS    ir al estado 14
+    D      ir al estado 15
+    F      ir al estado 16
+
+
+estado 111
+
+   59 LISTAEQU: CUAAB ELEMENTOEQU CUACE .
+
+    $default  reduce usando la regla 59 (LISTAEQU)
+
+
+estado 112
+
+   62 ELEMENTOEQU: V COMA . $@8 ELEMENTOEQU
+
+    $default  reduce usando la regla 61 ($@8)
+
+    $@8  ir al estado 115
+
+
+estado 113
+
+   50 STEP: CUAAB INT CUACE .
+
+    $default  reduce usando la regla 50 (STEP)
+
+
+estado 114
+
+   48 F: FOR ID OP_AS INT TO INT STEP $@7 lines . NEXT ID
+
+    NEXT  desplazar e ir al estado 116
+
+
+estado 115
+
+   62 ELEMENTOEQU: V COMA $@8 . ELEMENTOEQU
+
+    INT  desplazar e ir al estado 32
+    ID   desplazar e ir al estado 33
+
+    ELEMENTOEQU  ir al estado 117
+    V            ir al estado 106
+
+
+estado 116
+
+   48 F: FOR ID OP_AS INT TO INT STEP $@7 lines NEXT . ID
+
+    ID  desplazar e ir al estado 118
+
+
+estado 117
+
+   62 ELEMENTOEQU: V COMA $@8 ELEMENTOEQU .
+
+    $default  reduce usando la regla 62 (ELEMENTOEQU)
+
+
+estado 118
+
+   48 F: FOR ID OP_AS INT TO INT STEP $@7 lines NEXT ID .
+
+    $default  reduce usando la regla 48 (F)

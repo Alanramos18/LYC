@@ -1,0 +1,3 @@
+NOMBRE          TIPODATO        VALOR           LONGITUD       
+nombre          string          -               -              
+num             integer         0               -              
