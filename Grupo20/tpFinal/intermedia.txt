@@ -1,0 +1,17 @@
+
+num2 := 9 
+may := 18 
+men := 1 
+men := 1 
+men == 20 || men == 30 IF enero := 18 
+num > 8 && num < 10 IF mayo := 12 BODY julio := 18 
+num == 0 WHILE oct := 18 
+temp := 1 FOR temp <= 6 WHILE slo := 18 BODYWHILE temp := temp + 2 
+@num := 1 + 1 
+@max := 1 
+@aux := 2 
+@aux > @max IF @max := @aux 
+@aux := temp 
+@aux > @max IF @max := @aux 
+@num == @max IF @true := 1 BODY @true := 0 
+@true == 0 IF sla := 18 

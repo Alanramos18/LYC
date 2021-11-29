@@ -1,0 +1,35 @@
+dim [nombre, num] as [string, integer];
+
+may := 18;
+men := 1;
+
+alan := "alan";
+
+*/ Declaro dos variables porque... no hay porque /*
+if(men == 20 OR men == 30)
+{
+	enero := 18;
+}
+
+if(num > 8 AND num < 10)
+{
+	mayo := 12;
+}
+else
+{
+	julio := 18;
+}
+
+while(num == 0)
+{
+	oct := 18;
+}
+
+for temp := 1 to 6 [2]
+	slo := 18;
+next temp
+
+if(EQUMAX(1+1; [1, 2, temp]))
+{
+	sla := 18;
+}
