@@ -86,6 +86,7 @@ struct node
 FILE *yyin;
 FILE *fptr;
 FILE *ftemp;
+FILE *fasm;
 
 int dimVariable = 0;
 int dimTipo = 0;
@@ -93,22 +94,29 @@ int flag = 0;
 int ifflag = 0;
 int listflag = 0;
 int body = 0;
+int validation = 0;
 char step[255];
+char op[255];
 char buffer[BUFFER_SIZE];
 char dimVariableList[5][20];
 char dimTipoList[5][20];
-char idToAssign[20];
+char idToAssign[30];
+char valueConverted[30];
 int value;
+int lenght;
 char condition[2];
+char signoEqu[1];
 char signo[1];
+char equ[5];
 char auxConvert[255];
 char auxConvert2[255];
 void yyerror(char *s);
 int yylex(void);
 int CheckDim(void);
-void SaveInFile(void);
 void SaveValue(void);
 void AddValue(char *str, const char *id, const int value);
+void ResetTs();
+void SaveInFile(int isDim);
 
 struct node* progptr; 
 struct node* linesptr; 
@@ -135,11 +143,22 @@ struct node* EPtr;
 struct node* create_leaf(char data[255]);
 struct node* create_node(char data[255], struct node* right, struct node* left);
 void ReadTree(struct node* tree);
+void CheckExistingVariables();
+
+void genera_asm();
+void GeneraHeader();
+void GeneraVariables();
+void GeneraCode();
+
+void ReadTreeForAsm(struct node* tree);
+void AsmAsig(struct node* tree);
+int ValidateComp(char *data);
+int ValidateOp(char *data);
 
 
 
 /* Line 189 of yacc.c  */
-#line 143 "y.tab.c"
+#line 162 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -206,7 +225,8 @@ void ReadTree(struct node* tree);
      MAS = 295,
      MENOS = 296,
      POR = 297,
-     DIV = 298
+     DIV = 298,
+     CONSTANT = 299
    };
 #endif
 /* Tokens.  */
@@ -251,6 +271,7 @@ void ReadTree(struct node* tree);
 #define MENOS 296
 #define POR 297
 #define DIV 298
+#define CONSTANT 299
 
 
 
@@ -260,7 +281,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 69 "Sintactico.y"
+#line 88 "Sintactico.y"
 
     char name[20];
     int num;
@@ -268,7 +289,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 272 "y.tab.c"
+#line 293 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -280,7 +301,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 284 "y.tab.c"
+#line 305 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -493,22 +514,22 @@ union yyalloc
 #endif
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  27
+#define YYFINAL  29
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   89
+#define YYLAST   101
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  44
+#define YYNTOKENS  45
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  36
+#define YYNNTS  35
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  65
+#define YYNRULES  67
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  119
+#define YYNSTATES  124
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   298
+#define YYMAXUTOK   299
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -545,7 +566,7 @@ static const yytype_uint8 yytranslate[] =
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    38,    39,    40,    41,    42,    43
+      35,    36,    37,    38,    39,    40,    41,    42,    43,    44
 };
 
 #if YYDEBUG
@@ -556,47 +577,48 @@ static const yytype_uint8 yyprhs[] =
        0,     0,     3,     5,     7,     8,    12,    14,    16,    19,
       22,    26,    29,    31,    35,    39,    40,    47,    51,    53,
       56,    57,    62,    63,    68,    70,    74,    76,    78,    80,
-      82,    84,    86,    87,    88,    94,    98,   101,   104,   109,
-     113,   115,   119,   123,   125,   129,   131,   133,   135,   136,
-     148,   151,   155,   162,   164,   166,   170,   172,   174,   176,
-     178,   182,   184,   185,   190,   192
+      82,    84,    86,    87,    88,    94,    99,   104,   108,   112,
+     115,   118,   123,   127,   129,   133,   137,   139,   143,   145,
+     147,   149,   150,   162,   165,   169,   176,   178,   180,   184,
+     186,   188,   190,   192,   196,   198,   202,   204
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-      45,     0,    -1,    46,    -1,    48,    -1,    -1,    48,    47,
-      46,    -1,    49,    -1,    50,    -1,    61,    28,    -1,    62,
-      28,    -1,    35,     5,    28,    -1,    63,    28,    -1,    69,
-      -1,     6,    52,    58,    -1,    12,    52,    58,    -1,    -1,
-      12,    52,    58,    51,    13,    58,    -1,     7,    53,     8,
-      -1,    56,    -1,    36,    56,    -1,    -1,    56,    54,    38,
-      56,    -1,    -1,    56,    55,    37,    56,    -1,    72,    -1,
-       5,    57,    79,    -1,    11,    -1,    29,    -1,    30,    -1,
-      31,    -1,    32,    -1,    33,    -1,    -1,    -1,     9,    59,
-      46,    60,    10,    -1,     5,    14,    79,    -1,    34,     3,
-      -1,    34,     5,    -1,    15,    64,    16,    66,    -1,    21,
-      65,    22,    -1,     5,    -1,    65,    17,     5,    -1,    21,
-      67,    22,    -1,    68,    -1,    67,    17,    68,    -1,    18,
-      -1,    20,    -1,    19,    -1,    -1,    23,     5,    14,     4,
-      24,     4,    71,    70,    46,    25,     5,    -1,    21,    22,
-      -1,    21,     4,    22,    -1,    73,     7,    74,    28,    76,
-       8,    -1,    26,    -1,    27,    -1,     4,    75,     4,    -1,
-      40,    -1,    41,    -1,    42,    -1,    43,    -1,    21,    77,
-      22,    -1,    79,    -1,    -1,    79,    17,    78,    77,    -1,
-       5,    -1,     4,    -1
+      46,     0,    -1,    47,    -1,    49,    -1,    -1,    49,    48,
+      47,    -1,    50,    -1,    51,    -1,    62,    28,    -1,    63,
+      28,    -1,    35,     5,    28,    -1,    64,    28,    -1,    70,
+      -1,     6,    53,    59,    -1,    12,    53,    59,    -1,    -1,
+      12,    53,    59,    52,    13,    59,    -1,     7,    54,     8,
+      -1,    57,    -1,    36,    57,    -1,    -1,    57,    55,    38,
+      57,    -1,    -1,    57,    56,    37,    57,    -1,    73,    -1,
+       5,    58,    79,    -1,    11,    -1,    29,    -1,    30,    -1,
+      31,    -1,    32,    -1,    33,    -1,    -1,    -1,     9,    60,
+      47,    61,    10,    -1,    44,     5,    14,    79,    -1,    44,
+       5,    14,     3,    -1,     5,    14,    79,    -1,     5,    14,
+       3,    -1,    34,     3,    -1,    34,     5,    -1,    15,    65,
+      16,    67,    -1,    21,    66,    22,    -1,     5,    -1,    66,
+      17,     5,    -1,    21,    68,    22,    -1,    69,    -1,    68,
+      17,    69,    -1,    18,    -1,    20,    -1,    19,    -1,    -1,
+      23,     5,    14,     4,    24,     4,    72,    71,    47,    25,
+       5,    -1,    21,    22,    -1,    21,     4,    22,    -1,    74,
+       7,    75,    28,    77,     8,    -1,    26,    -1,    27,    -1,
+       4,    76,     4,    -1,    40,    -1,    41,    -1,    42,    -1,
+      43,    -1,    21,    78,    22,    -1,    79,    -1,    78,    17,
+      79,    -1,     5,    -1,     4,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    83,    83,    85,    96,    96,   118,   119,   120,   121,
-     122,   123,   124,   128,   132,   133,   133,   137,   139,   140,
-     141,   141,   142,   142,   143,   145,   147,   148,   149,   150,
-     151,   152,   154,   154,   154,   158,   162,   163,   166,   168,
-     170,   171,   173,   175,   176,   178,   179,   180,   186,   186,
-     198,   199,   203,   212,   213,   215,   222,   223,   224,   225,
-     227,   229,   244,   244,   260,   261
+       0,   102,   102,   104,   115,   115,   137,   138,   139,   140,
+     141,   142,   143,   147,   151,   152,   152,   156,   158,   159,
+     160,   160,   161,   161,   162,   164,   166,   167,   168,   169,
+     170,   171,   173,   173,   173,   177,   178,   181,   184,   189,
+     206,   209,   211,   213,   214,   216,   218,   219,   221,   222,
+     223,   229,   229,   241,   242,   246,   255,   256,   258,   265,
+     266,   267,   268,   270,   272,   276,   285,   286
 };
 #endif
 
@@ -610,11 +632,12 @@ static const char *const yytname[] =
   "COMA", "STRINGT", "INTEGER", "REAL", "CUAAB", "CUACE", "FOR", "TO",
   "NEXT", "EQUMAX", "EQUMIN", "FIN", "OP_MEN", "OP_MAYIGU", "OP_MENIGU",
   "OP_IGU", "OP_DIST", "DISPLAY", "GET", "NOT", "AND", "OR", "REA", "MAS",
-  "MENOS", "POR", "DIV", "$accept", "prog", "lines", "$@1", "line", "W",
-  "I", "$@2", "COMPARATION", "COND", "$@3", "$@4", "CONDFINAL",
-  "CONDITION", "BODY", "$@5", "$@6", "A", "DIS", "D", "LISTAVARIABLE",
-  "VARIABLES", "LISTATIPO", "TIPOS", "TIPO", "F", "$@7", "STEP", "E",
-  "EQU", "EXPRESIONEQU", "SIGNO", "LISTAEQU", "ELEMENTOEQU", "$@8", "V", 0
+  "MENOS", "POR", "DIV", "CONSTANT", "$accept", "prog", "lines", "$@1",
+  "line", "W", "I", "$@2", "COMPARATION", "COND", "$@3", "$@4",
+  "CONDFINAL", "CONDITION", "BODY", "$@5", "$@6", "A", "DIS", "D",
+  "LISTAVARIABLE", "VARIABLES", "LISTATIPO", "TIPOS", "TIPO", "F", "$@7",
+  "STEP", "E", "EQU", "EXPRESIONEQU", "SIGNO", "LISTAEQU", "ELEMENTOEQU",
+  "V", 0
 };
 #endif
 
@@ -627,20 +650,20 @@ static const yytype_uint16 yytoknum[] =
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
      285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
-     295,   296,   297,   298
+     295,   296,   297,   298,   299
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    44,    45,    46,    47,    46,    48,    48,    48,    48,
-      48,    48,    48,    49,    50,    51,    50,    52,    53,    53,
-      54,    53,    55,    53,    53,    56,    57,    57,    57,    57,
-      57,    57,    59,    60,    58,    61,    62,    62,    63,    64,
-      65,    65,    66,    67,    67,    68,    68,    68,    70,    69,
-      71,    71,    72,    73,    73,    74,    75,    75,    75,    75,
-      76,    77,    78,    77,    79,    79
+       0,    45,    46,    47,    48,    47,    49,    49,    49,    49,
+      49,    49,    49,    50,    51,    52,    51,    53,    54,    54,
+      55,    54,    56,    54,    54,    57,    58,    58,    58,    58,
+      58,    58,    60,    61,    59,    62,    62,    62,    62,    63,
+      63,    64,    65,    66,    66,    67,    68,    68,    69,    69,
+      69,    71,    70,    72,    72,    73,    74,    74,    75,    76,
+      76,    76,    76,    77,    78,    78,    79,    79
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -649,10 +672,10 @@ static const yytype_uint8 yyr2[] =
        0,     2,     1,     1,     0,     3,     1,     1,     2,     2,
        3,     2,     1,     3,     3,     0,     6,     3,     1,     2,
        0,     4,     0,     4,     1,     3,     1,     1,     1,     1,
-       1,     1,     0,     0,     5,     3,     2,     2,     4,     3,
-       1,     3,     3,     1,     3,     1,     1,     1,     0,    11,
-       2,     3,     6,     1,     1,     3,     1,     1,     1,     1,
-       3,     1,     0,     4,     1,     1
+       1,     1,     0,     0,     5,     4,     4,     3,     3,     2,
+       2,     4,     3,     1,     3,     3,     1,     3,     1,     1,
+       1,     0,    11,     2,     3,     6,     1,     1,     3,     1,
+       1,     1,     1,     3,     1,     3,     1,     1
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -660,55 +683,57 @@ static const yytype_uint8 yyr2[] =
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     2,
-       4,     6,     7,     0,     0,     0,    12,     0,     0,     0,
-       0,     0,     0,     0,    36,    37,     0,     1,     0,     8,
-       9,    11,    65,    64,    35,     0,    53,    54,     0,     0,
-      18,    24,     0,    32,    13,    14,    40,     0,     0,     0,
-      10,     5,    26,    27,    28,    29,    30,    31,     0,    19,
-      17,     0,     0,     0,     0,     0,     0,    39,     0,    38,
-       0,    25,     0,     0,     0,     0,    33,     0,    41,    45,
-      47,    46,     0,    43,     0,    21,    23,    56,    57,    58,
-      59,     0,     0,     0,    16,     0,    42,     0,    55,     0,
-       0,    34,    44,     0,    48,     0,    61,    52,     0,    50,
-       0,    60,    62,    51,     0,     0,     0,    63,    49
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       2,     4,     6,     7,     0,     0,     0,    12,     0,     0,
+       0,     0,     0,     0,     0,    39,    40,     0,     0,     1,
+       0,     8,     9,    11,    38,    67,    66,    37,     0,    56,
+      57,     0,     0,    18,    24,     0,    32,    13,    14,    43,
+       0,     0,     0,    10,     0,     5,    26,    27,    28,    29,
+      30,    31,     0,    19,    17,     0,     0,     0,     0,     0,
+       0,    42,     0,    41,     0,    36,    35,    25,     0,     0,
+       0,     0,    33,     0,    44,    48,    50,    49,     0,    46,
+       0,    21,    23,    59,    60,    61,    62,     0,     0,     0,
+      16,     0,    45,     0,    58,     0,     0,    34,    47,     0,
+      51,     0,    64,    55,     0,    53,     0,     0,    63,    54,
+       0,    65,     0,    52
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     8,     9,    28,    10,    11,    12,    65,    19,    39,
-      61,    62,    40,    58,    44,    64,    93,    13,    14,    15,
-      22,    47,    69,    82,    83,    16,   110,   104,    41,    42,
-      75,    91,   100,   105,   115,   106
+      -1,     9,    10,    30,    11,    12,    13,    69,    20,    42,
+      65,    66,    43,    62,    47,    68,    99,    14,    15,    16,
+      23,    50,    73,    88,    89,    17,   116,   110,    44,    45,
+      81,    97,   106,   111,    37
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -36
+#define YYPACT_NINF -54
 static const yytype_int8 yypact[] =
 {
-       5,    -5,    11,    11,    -2,    36,    19,    37,    21,   -36,
-       6,   -36,   -36,    26,    27,    28,   -36,    25,    -1,    35,
-      35,    52,    43,    46,   -36,   -36,    33,   -36,     5,   -36,
-     -36,   -36,   -36,   -36,   -36,    16,   -36,   -36,    57,    55,
-     -23,   -36,    58,   -36,   -36,    51,   -36,   -10,    45,    63,
-     -36,   -36,   -36,   -36,   -36,   -36,   -36,   -36,    25,   -36,
-     -36,    30,    32,    66,     5,    59,    68,   -36,    14,   -36,
-      47,   -36,    57,    57,    10,    48,   -36,    35,   -36,   -36,
-     -36,   -36,    -9,   -36,    70,   -36,   -36,   -36,   -36,   -36,
-     -36,    71,    56,    69,   -36,    14,   -36,    60,   -36,    25,
-      72,   -36,   -36,     1,   -36,    61,    67,   -36,    64,   -36,
-       5,   -36,   -36,   -36,    53,    25,    80,   -36,   -36
+      -1,     4,     9,     9,    10,    20,    18,    24,    58,    66,
+     -54,     7,   -54,   -54,    -8,    39,    40,   -54,    46,     1,
+      60,    60,    65,    55,    59,   -54,   -54,    44,    61,   -54,
+      -1,   -54,   -54,   -54,   -54,   -54,   -54,   -54,    15,   -54,
+     -54,    69,    68,    -2,   -54,    70,   -54,   -54,    67,   -54,
+      -9,    57,    75,   -54,    54,   -54,   -54,   -54,   -54,   -54,
+     -54,   -54,    37,   -54,   -54,    43,    45,    79,    -1,    71,
+      80,   -54,    42,   -54,    63,   -54,   -54,   -54,    69,    69,
+      13,    62,   -54,    60,   -54,   -54,   -54,   -54,    -7,   -54,
+      84,   -54,   -54,   -54,   -54,   -54,   -54,    85,    72,    81,
+     -54,    42,   -54,    73,   -54,    37,    87,   -54,   -54,     8,
+     -54,     2,   -54,   -54,    74,   -54,    -1,    37,   -54,   -54,
+      76,   -54,    92,   -54
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -36,   -36,   -28,   -36,   -36,   -36,   -36,   -36,    84,   -36,
-     -36,   -36,   -35,   -36,   -19,   -36,   -36,   -36,   -36,   -36,
-     -36,   -36,   -36,   -36,    -7,   -36,   -36,   -36,   -36,   -36,
-     -36,   -36,   -36,   -26,   -36,   -15
+     -54,   -54,   -30,   -54,   -54,   -54,   -54,   -54,    89,   -54,
+     -54,   -54,   -39,   -54,   -18,   -54,   -54,   -54,   -54,   -54,
+     -54,   -54,   -54,   -54,    -3,   -54,   -54,   -54,   -54,   -54,
+     -54,   -54,   -54,   -54,   -53
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -718,46 +743,51 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -23
 static const yytype_int8 yytable[] =
 {
-      51,    45,    34,    59,    35,   108,    -3,    66,    95,    17,
-       1,     2,    67,    96,   -22,   -20,    -3,     3,    18,    21,
-       4,    27,    24,   109,    25,    36,    37,    52,     5,    32,
-      33,    -3,    79,    80,    81,    38,    76,    85,    86,     6,
-       7,    23,    26,    71,    43,    53,    54,    55,    56,    57,
-      87,    88,    89,    90,    29,    30,    31,    46,    94,    48,
-      49,    50,    35,    60,   -15,    63,    68,    70,    72,    73,
-      74,    84,    77,    78,    97,    98,    92,    99,   116,   101,
-     107,   103,   114,   111,   112,   118,   113,    20,   102,   117
+      55,    76,    63,    48,     1,     2,    38,    -3,    70,    77,
+     101,     3,   114,    71,     4,   102,    19,    -3,    18,   117,
+      31,    25,     5,    26,   118,    24,    56,    39,    40,    27,
+     115,    22,    -3,     6,     7,   -22,   -20,    41,    82,    91,
+      92,    35,    36,     8,    57,    58,    59,    60,    61,    34,
+      35,    36,   112,    93,    94,    95,    96,    75,    35,    36,
+      85,    86,    87,    28,   121,   100,    29,    32,    33,    46,
+      49,    51,    53,    52,    38,    54,    64,    67,    72,    74,
+     -15,    78,    79,    80,    83,    84,   120,    90,   103,   104,
+      98,   107,    21,   105,   109,   113,   119,   123,   108,     0,
+       0,   122
 };
 
-static const yytype_uint8 yycheck[] =
+static const yytype_int8 yycheck[] =
 {
-      28,    20,    17,    38,     5,     4,     0,    17,    17,    14,
-       5,     6,    22,    22,    37,    38,    10,    12,     7,    21,
-      15,     0,     3,    22,     5,    26,    27,    11,    23,     4,
-       5,    25,    18,    19,    20,    36,    64,    72,    73,    34,
-      35,     5,     5,    58,     9,    29,    30,    31,    32,    33,
-      40,    41,    42,    43,    28,    28,    28,     5,    77,    16,
-      14,    28,     5,     8,    13,     7,    21,     4,    38,    37,
-       4,    24,    13,     5,     4,     4,    28,    21,    25,    10,
-       8,    21,   110,    22,    17,     5,    22,     3,    95,   115
+      30,    54,    41,    21,     5,     6,     5,     0,    17,    62,
+      17,    12,     4,    22,    15,    22,     7,    10,    14,    17,
+      28,     3,    23,     5,    22,     5,    11,    26,    27,     5,
+      22,    21,    25,    34,    35,    37,    38,    36,    68,    78,
+      79,     4,     5,    44,    29,    30,    31,    32,    33,     3,
+       4,     5,   105,    40,    41,    42,    43,     3,     4,     5,
+      18,    19,    20,     5,   117,    83,     0,    28,    28,     9,
+       5,    16,    28,    14,     5,    14,     8,     7,    21,     4,
+      13,    38,    37,     4,    13,     5,   116,    24,     4,     4,
+      28,    10,     3,    21,    21,     8,    22,     5,   101,    -1,
+      -1,    25
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     5,     6,    12,    15,    23,    34,    35,    45,    46,
-      48,    49,    50,    61,    62,    63,    69,    14,     7,    52,
-      52,    21,    64,     5,     3,     5,     5,     0,    47,    28,
-      28,    28,     4,     5,    79,     5,    26,    27,    36,    53,
-      56,    72,    73,     9,    58,    58,     5,    65,    16,    14,
-      28,    46,    11,    29,    30,    31,    32,    33,    57,    56,
-       8,    54,    55,     7,    59,    51,    17,    22,    21,    66,
-       4,    79,    38,    37,     4,    74,    46,    13,     5,    18,
-      19,    20,    67,    68,    24,    56,    56,    40,    41,    42,
-      43,    75,    28,    60,    58,    17,    22,     4,     4,    21,
-      76,    10,    68,    21,    71,    77,    79,     8,     4,    22,
-      70,    22,    17,    22,    46,    78,    25,    77,     5
+       0,     5,     6,    12,    15,    23,    34,    35,    44,    46,
+      47,    49,    50,    51,    62,    63,    64,    70,    14,     7,
+      53,    53,    21,    65,     5,     3,     5,     5,     5,     0,
+      48,    28,    28,    28,     3,     4,     5,    79,     5,    26,
+      27,    36,    54,    57,    73,    74,     9,    59,    59,     5,
+      66,    16,    14,    28,    14,    47,    11,    29,    30,    31,
+      32,    33,    58,    57,     8,    55,    56,     7,    60,    52,
+      17,    22,    21,    67,     4,     3,    79,    79,    38,    37,
+       4,    75,    47,    13,     5,    18,    19,    20,    68,    69,
+      24,    57,    57,    40,    41,    42,    43,    76,    28,    61,
+      59,    17,    22,     4,     4,    21,    77,    10,    69,    21,
+      72,    78,    79,     8,     4,    22,    71,    17,    22,    22,
+      47,    79,    25,     5
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1571,14 +1601,14 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 83 "Sintactico.y"
-    { progptr = linesptr; }
+#line 102 "Sintactico.y"
+    { progptr = linesptr; genera_asm();}
     break;
 
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 85 "Sintactico.y"
+#line 104 "Sintactico.y"
     { 
     if(body == 1) {
         if(ifflag == 0)
@@ -1595,7 +1625,7 @@ yyreduce:
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 96 "Sintactico.y"
+#line 115 "Sintactico.y"
     {
         if(body == 1)
         {
@@ -1622,423 +1652,441 @@ yyreduce:
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 118 "Sintactico.y"
+#line 137 "Sintactico.y"
     {lineptr = Wptr;}
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 119 "Sintactico.y"
+#line 138 "Sintactico.y"
     {lineptr = selPtr}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 120 "Sintactico.y"
+#line 139 "Sintactico.y"
     {lineptr = Aptr;}
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 121 "Sintactico.y"
+#line 140 "Sintactico.y"
     {lineptr = disPtr;}
     break;
 
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 122 "Sintactico.y"
-    {lineptr = create_node("GET", NULL, create_leaf((yyvsp[(2) - (3)].name)));}
+#line 141 "Sintactico.y"
+    {strcpy(idToAssign, (yyvsp[(2) - (3)].name)); CheckExistingVariables(); lineptr = create_node("GET", NULL, create_leaf((yyvsp[(2) - (3)].name)));}
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 123 "Sintactico.y"
-    {CheckDim(); printf("Se ha analizado un DIM\n\n\n");}
+#line 142 "Sintactico.y"
+    {CheckDim();}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 124 "Sintactico.y"
+#line 143 "Sintactico.y"
     {lineptr = Fptr}
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 128 "Sintactico.y"
+#line 147 "Sintactico.y"
     { Wptr = create_node("WHILE", bodyPtr, condfinPtr); if(ifflag == 1) { linesptr = auxPtr; }; ifflag = 0;}
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 132 "Sintactico.y"
-    {selPtr = create_node("IF", bodyPtr, condfinPtr); if(ifflag == 1) { linesptr = auxPtr; }; ifflag = 0; }
+#line 151 "Sintactico.y"
+    {selPtr = create_node("IF", bodyPtr, condfinPtr); if(ifflag == 1) { linesptr = auxPtr; }; ifflag = 0;}
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 133 "Sintactico.y"
+#line 152 "Sintactico.y"
     {accionPtr = bodyPtr;}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 133 "Sintactico.y"
+#line 152 "Sintactico.y"
     { elsePtr = bodyPtr;
-                                                            bodyPtr = create_node("ELSE", elsePtr, accionPtr);
+                                                            bodyPtr = create_node("BODY", elsePtr, accionPtr);
                                                             selPtr = create_node("IF", bodyPtr, condfinPtr);}
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 140 "Sintactico.y"
+#line 159 "Sintactico.y"
     {condfinPtr = create_node("!", NULL, condfinPtr);}
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 141 "Sintactico.y"
+#line 160 "Sintactico.y"
     {expPtr = condfinPtr;}
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 141 "Sintactico.y"
+#line 160 "Sintactico.y"
     { condfinPtr = create_node("||", condfinPtr, expPtr);}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 142 "Sintactico.y"
+#line 161 "Sintactico.y"
     {expPtr = condfinPtr;}
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 142 "Sintactico.y"
+#line 161 "Sintactico.y"
     { condfinPtr = create_node("&&", condfinPtr, expPtr);}
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 143 "Sintactico.y"
-    {condfinPtr = EPtr;}
+#line 162 "Sintactico.y"
+    {auxPtr = create_node("==", create_leaf("0"), create_leaf("@true")); condfinPtr = create_node("L", auxPtr, EPtr);}
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 145 "Sintactico.y"
+#line 164 "Sintactico.y"
     {condfinPtr = create_node(condition, Vptr, create_leaf((yyvsp[(1) - (3)].name)));}
     break;
 
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 147 "Sintactico.y"
+#line 166 "Sintactico.y"
     {strcpy(condition, ">");}
     break;
 
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 148 "Sintactico.y"
+#line 167 "Sintactico.y"
     {strcpy(condition, "<");}
     break;
 
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 149 "Sintactico.y"
+#line 168 "Sintactico.y"
     {strcpy(condition, ">=");}
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 150 "Sintactico.y"
+#line 169 "Sintactico.y"
     {strcpy(condition, "<=");}
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 151 "Sintactico.y"
+#line 170 "Sintactico.y"
     {strcpy(condition, "==");}
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 152 "Sintactico.y"
+#line 171 "Sintactico.y"
     {strcpy(condition, "!=");}
     break;
 
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 154 "Sintactico.y"
+#line 173 "Sintactico.y"
     {body = 1;}
     break;
 
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 154 "Sintactico.y"
+#line 173 "Sintactico.y"
     {body = 0;}
     break;
 
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 158 "Sintactico.y"
-    {strcpy(idToAssign, (yyvsp[(1) - (3)].name)); SaveValue(); Aptr = create_node(":=", Vptr, create_leaf((yyvsp[(1) - (3)].name)));}
+#line 177 "Sintactico.y"
+    { strcpy(idToAssign, (yyvsp[(2) - (4)].name)); SaveInFile(0); Aptr = create_node(":=", Vptr, create_leaf((yyvsp[(2) - (4)].name))); }
     break;
 
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 162 "Sintactico.y"
-    {printf("<DIS> --> DISPLAY STRING\n"); disPtr = create_node("Display", NULL, create_leaf((yyvsp[(2) - (2)].name)));}
+#line 178 "Sintactico.y"
+    { 
+    strcpy(idToAssign, (yyvsp[(2) - (4)].name)); strcpy(valueConverted, (yyvsp[(4) - (4)].name)); lenght = strlen(valueConverted); SaveInFile(0); Aptr = create_node(":=", create_leaf(valueConverted), create_leaf((yyvsp[(2) - (4)].name))); 
+}
     break;
 
   case 37:
 
 /* Line 1455 of yacc.c  */
-#line 163 "Sintactico.y"
-    { disPtr = create_node("Display", NULL, create_leaf((yyvsp[(2) - (2)].name)));}
+#line 181 "Sintactico.y"
+    {
+    strcpy(idToAssign, (yyvsp[(1) - (3)].name)); CheckExistingVariables(); Aptr = create_node(":=", Vptr, create_leaf((yyvsp[(1) - (3)].name)));
+}
     break;
 
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 166 "Sintactico.y"
-    {printf("<D> --> DIM LISTAVARIABLE AS LISTATIPO\n");}
+#line 184 "Sintactico.y"
+    {
+    strcpy(idToAssign, (yyvsp[(1) - (3)].name)); CheckExistingVariables(); Aptr = create_node(":=", create_leaf((yyvsp[(3) - (3)].name)), create_leaf((yyvsp[(1) - (3)].name)));
+}
     break;
 
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 168 "Sintactico.y"
-    {printf("<LISTAVARIABLE> --> [ VARIABLES ]\n");}
+#line 189 "Sintactico.y"
+    { 
+                    int counter = 0;
+                    int x = 0;
+                    strcpy(valueConverted, (yyvsp[(2) - (2)].name));
+                    for(x = 0; x < 20; x++)
+                    {
+                        if(valueConverted[x] == '"')
+                        {
+                            counter++;
+                        }
+
+                        if(counter == 2)
+                        {
+                            valueConverted[++x] = '\0';
+                            break; 
+                        }
+                    } disPtr = create_node("Display", NULL, create_leaf(valueConverted));}
     break;
 
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 170 "Sintactico.y"
-    {strcpy(dimVariableList[dimVariable++], (yyvsp[(1) - (1)].name)); printf("<VARIABLES> --> ID\n");}
-    break;
-
-  case 41:
-
-/* Line 1455 of yacc.c  */
-#line 171 "Sintactico.y"
-    {strcpy(dimVariableList[dimVariable++], (yyvsp[(3) - (3)].name)); printf("<VARIABLES> --> VARIABLES , ID\n");}
-    break;
-
-  case 42:
-
-/* Line 1455 of yacc.c  */
-#line 173 "Sintactico.y"
-    {printf("<LISTATIPO> --> [ TIPOS ]\n");}
+#line 206 "Sintactico.y"
+    { disPtr = create_node("Display", NULL, create_leaf((yyvsp[(2) - (2)].name)));}
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 175 "Sintactico.y"
-    {strcpy(dimTipoList[dimTipo++], (yyvsp[(1) - (1)].name)); printf("<TIPOS> --> TIPO\n");}
+#line 213 "Sintactico.y"
+    {strcpy(dimVariableList[dimVariable++], (yyvsp[(1) - (1)].name)); }
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 176 "Sintactico.y"
-    {strcpy(dimTipoList[dimTipo++], (yyvsp[(3) - (3)].name)); printf("<TIPOS> --> TIPOS , TIPO\n");}
-    break;
-
-  case 45:
-
-/* Line 1455 of yacc.c  */
-#line 178 "Sintactico.y"
-    {strcpy((yyval.name),"string"); printf("<TIPO> --> STRINGT\n");}
+#line 214 "Sintactico.y"
+    {strcpy(dimVariableList[dimVariable++], (yyvsp[(3) - (3)].name)); }
     break;
 
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 179 "Sintactico.y"
-    {strcpy((yyval.name),"real"); printf("<TIPO> --> REAL\n");}
+#line 218 "Sintactico.y"
+    {strcpy(dimTipoList[dimTipo++], (yyvsp[(1) - (1)].name)); }
     break;
 
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 180 "Sintactico.y"
-    {strcpy((yyval.name),"integer"); printf("<TIPO> --> INTEGER\n");}
+#line 219 "Sintactico.y"
+    {strcpy(dimTipoList[dimTipo++], (yyvsp[(3) - (3)].name)); }
     break;
 
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 186 "Sintactico.y"
-    {body = 1;}
+#line 221 "Sintactico.y"
+    {strcpy((yyval.name),"string"); }
     break;
 
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 186 "Sintactico.y"
-    {
-        sprintf(auxConvert, "%d", (yyvsp[(4) - (11)].num));
-        lineptr = create_node("=", create_leaf(auxConvert), create_leaf((yyvsp[(2) - (11)].name))); 
-        sprintf(auxConvert, "%d", (yyvsp[(6) - (11)].num));
-        condfinPtr = create_node("<=", create_leaf(auxConvert), create_leaf((yyvsp[(2) - (11)].name)));
-        saltoPtr = create_node("=", create_node("+", create_leaf(step), create_leaf((yyvsp[(2) - (11)].name))), create_leaf((yyvsp[(2) - (11)].name)));
-        body = 0;
-        bodyPtr = create_node("BODYWHILE", saltoPtr, bodyPtr);
-        Wptr = create_node("WHILE-FOR", bodyPtr, condfinPtr);
-        Fptr = create_node("FOR", Wptr, lineptr);
-    }
+#line 222 "Sintactico.y"
+    {strcpy((yyval.name),"real"); }
+    break;
+
+  case 50:
+
+/* Line 1455 of yacc.c  */
+#line 223 "Sintactico.y"
+    {strcpy((yyval.name),"integer"); }
     break;
 
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 199 "Sintactico.y"
-    { sprintf(auxConvert, "%d", (yyvsp[(2) - (3)].num)); strcpy(step, auxConvert); }
+#line 229 "Sintactico.y"
+    {body = 1;}
     break;
 
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 203 "Sintactico.y"
+#line 229 "Sintactico.y"
     {
-    condfinPtr = create_node("==", create_leaf("@max"), create_leaf("@num"));
-    retFalsePtr = create_node("Return", NULL, create_leaf("False"));
-    retTruePtr = create_node("Return", NULL, create_leaf("True"));
-    expPtr = create_node("L", retFalsePtr, retTruePtr);
-    selPtr = create_node("IF", expPtr, condfinPtr);
-    EPtr = create_node("L", selPtr, EPtr);
-}
+        sprintf(auxConvert, "%d", (yyvsp[(4) - (11)].num));
+        lineptr = create_node(":=", create_leaf(auxConvert), create_leaf((yyvsp[(2) - (11)].name))); 
+        sprintf(auxConvert, "%d", (yyvsp[(6) - (11)].num));
+        condfinPtr = create_node("<=", create_leaf(auxConvert), create_leaf((yyvsp[(2) - (11)].name)));
+        saltoPtr = create_node(":=", create_node("+", create_leaf(step), create_leaf((yyvsp[(2) - (11)].name))), create_leaf((yyvsp[(2) - (11)].name)));
+        body = 0;
+        bodyPtr = create_node("BODYWHILE", saltoPtr, bodyPtr);
+        Wptr = create_node("WHILE", bodyPtr, condfinPtr);
+        Fptr = create_node("FOR", Wptr, lineptr);
+    }
+    break;
+
+  case 54:
+
+/* Line 1455 of yacc.c  */
+#line 242 "Sintactico.y"
+    { sprintf(auxConvert, "%d", (yyvsp[(2) - (3)].num)); strcpy(step, auxConvert); }
     break;
 
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 215 "Sintactico.y"
-    { 
-    sprintf(auxConvert, "%d", (yyvsp[(1) - (3)].num));
-    sprintf(auxConvert2, "%d", (yyvsp[(3) - (3)].num));
-    expPtr = create_node(signo, create_leaf(auxConvert2), create_leaf(auxConvert));
-    EPtr = create_node("=", expPtr, create_leaf("@num"));
+#line 246 "Sintactico.y"
+    {
+    condfinPtr = create_node("==", create_leaf(equ), create_leaf("@num"));
+    retFalsePtr = create_node(":=", create_leaf("0"), create_leaf("@true"));
+    retTruePtr = create_node(":=", create_leaf("1"), create_leaf("@true"));
+    expPtr = create_node("BODY", retFalsePtr, retTruePtr);
+    selPtr = create_node("IF", expPtr, condfinPtr);
+    EPtr = create_node("L", selPtr, EPtr);
 }
     break;
 
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 222 "Sintactico.y"
-    {strcpy(signo, "+");}
+#line 255 "Sintactico.y"
+    {strcpy(signoEqu, ">"); strcpy(equ, "@max");}
     break;
 
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 223 "Sintactico.y"
-    {strcpy(signo, "-");}
+#line 256 "Sintactico.y"
+    {strcpy(signoEqu, "<"); strcpy(equ, "@min");}
     break;
 
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 224 "Sintactico.y"
-    {strcpy(signo, "*");}
+#line 258 "Sintactico.y"
+    { 
+    sprintf(auxConvert, "%d", (yyvsp[(1) - (3)].num));
+    sprintf(auxConvert2, "%d", (yyvsp[(3) - (3)].num));
+    expPtr = create_node(signo, create_leaf(auxConvert2), create_leaf(auxConvert));
+    EPtr = create_node(":=", expPtr, create_leaf("@num"));
+}
     break;
 
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 225 "Sintactico.y"
-    {strcpy(signo, "/");}
+#line 265 "Sintactico.y"
+    {strcpy(signo, "+");}
+    break;
+
+  case 60:
+
+/* Line 1455 of yacc.c  */
+#line 266 "Sintactico.y"
+    {strcpy(signo, "-");}
     break;
 
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 229 "Sintactico.y"
-    { 
-        if (listflag == 0) {
-            maxPtr = create_node("=", Vptr, create_leaf("@max"));
-            listflag = 1;
-        } else {
-            expPtr = create_node("=", Vptr, create_leaf("@aux"));
-            expPtr = create_node("L", expPtr, maxPtr);
-            maxPtr = NULL;
-            EPtr = create_node("L", expPtr, EPtr);
-            condfinPtr = create_node(">", create_leaf("@max"), create_leaf("@aux"));
-            expPtr = create_node("=", create_leaf("@aux"), create_leaf("@max"));
-            selPtr = create_node("IF-EQU", expPtr, condfinPtr);
-            EPtr = create_node("L", selPtr, EPtr);
-        }
-    }
+#line 267 "Sintactico.y"
+    {strcpy(signo, "*");}
     break;
 
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 244 "Sintactico.y"
-    {
-    if (listflag == 0) {
-        maxPtr = create_node("=", Vptr, create_leaf("@max"));
-        listflag = 1;
-    } else {
-        expPtr = create_node("=", Vptr, create_leaf("@aux"));
-        expPtr = create_node("L", expPtr, maxPtr);
-        maxPtr = NULL;
-        EPtr = create_node("L", expPtr, EPtr);
-        condfinPtr = create_node(">", create_leaf("@max"), create_leaf("@aux"));
-        expPtr = create_node("=", create_leaf("@aux"), create_leaf("@max"));
-        selPtr = create_node("IF", expPtr, condfinPtr);
-        EPtr = create_node("L", selPtr, EPtr);
-    }
-}
+#line 268 "Sintactico.y"
+    {strcpy(signo, "/");}
     break;
 
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 260 "Sintactico.y"
-    {Vptr = create_leaf((yyvsp[(1) - (1)].name));}
+#line 272 "Sintactico.y"
+    {
+        maxPtr = create_node(":=", Vptr, create_leaf(equ));
+        EPtr = create_node("L", maxPtr, EPtr);
+    }
     break;
 
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 261 "Sintactico.y"
-    {sprintf(auxConvert, "%d", (yyvsp[(1) - (1)].num)); Vptr = create_leaf(auxConvert);}
+#line 276 "Sintactico.y"
+    {
+        auxPtr = create_node(":=", Vptr, create_leaf("@aux"));
+        condfinPtr = create_node(signoEqu, create_leaf(equ), create_leaf("@aux"));
+        expPtr = create_node(":=", create_leaf("@aux"), create_leaf(equ));
+        selPtr = create_node("IF", expPtr, condfinPtr);
+        auxPtr = create_node("L", selPtr, auxPtr);
+        EPtr = create_node("L", auxPtr, EPtr);
+}
+    break;
+
+  case 66:
+
+/* Line 1455 of yacc.c  */
+#line 285 "Sintactico.y"
+    {Vptr = create_leaf((yyvsp[(1) - (1)].name));}
+    break;
+
+  case 67:
+
+/* Line 1455 of yacc.c  */
+#line 286 "Sintactico.y"
+    {itoa((yyvsp[(1) - (1)].num), valueConverted, 10); sprintf(auxConvert, "%d", (yyvsp[(1) - (1)].num)); Vptr = create_leaf(auxConvert);}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 2042 "y.tab.c"
+#line 2090 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2250,7 +2298,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 264 "Sintactico.y"
+#line 289 "Sintactico.y"
 
 
 int main(int argc,char *argv[])
@@ -2261,6 +2309,8 @@ int main(int argc,char *argv[])
     }
     else
     {
+        ResetTs();
+
         while(feof(yyin) == 0)
         {
             yyparse();
@@ -2288,6 +2338,19 @@ void yyerror(char *s)
     fprintf(stderr, "%s\n", s);
 }
 
+void ResetTs()
+{
+    FILE *fp;
+
+    remove("ts.txt");
+    remove("Final.asm");
+    
+    fp  = fopen ("ts.txt", "w");
+    fprintf(fp,"%-15s %-15s %-15s %-15s\n", "NOMBRE", "TIPODATO", "VALOR", "LONGITUD");
+
+    fclose(fp);
+}
+
 int CheckDim()
 {
     if(dimVariable != dimTipo)
@@ -2296,27 +2359,131 @@ int CheckDim()
         return 1;
     }
     
-    SaveInFile();
+    SaveInFile(1);
 }
 
-void SaveInFile()
+void SaveInFile(int isDim)
 {
-    if ((fptr = fopen("ts.txt", "w")) == NULL)
+    char *pos;
+    if(isDim == 1)
     {
-        printf("\nNo se puede abrir el archivo de la tabla de simbolo\n");
-    }
-    else
-    {
-        fprintf(fptr,"%-15s %-15s %-15s %-15s\n", "NOMBRE", "TIPODATO", "VALOR", "LONGITUD");
+        if ((fptr = fopen("ts.txt", "r")) == NULL)
+        {
+            printf("\nNo se puede abrir el archivo de la tabla de simbolo\n");
+        }
 
+        if ((ftemp = fopen("temp.txt", "w")) == NULL)
+        {
+            printf("\nNo se puede abrir el archivo temporal\n");
+        }
+        
+        while((fgets(buffer, BUFFER_SIZE, fptr)) != NULL)
+        {
+            int x = 0;
+            for(x = 0; x < dimVariable; x++)
+            {
+                pos = strstr(buffer, dimVariableList[x]);
+                if(pos != NULL)
+                {
+                    printf("No se puede declarar una variable ya existente\n");
+                    exit(1);
+                }    
+            }            
+        }
+
+        fclose(fptr);
+
+        if ((fptr = fopen("ts.txt", "a")) == NULL)
+        {
+            printf("\nNo se puede abrir el archivo de la tabla de simbolo\n");
+        }
         int x = 0;
         for(x = 0; x < dimVariable; x++)
         {
             fprintf(fptr,"%-15s %-15s %-15s %-15s\n", dimVariableList[x], dimTipoList[x], "-", "-");
         }
+        
+        fclose(fptr);
+        dimVariable = 0;
+        dimTipo = 0;
+    } else {
+        fptr = fopen("ts.txt", "r");
+                
+        if (fptr == NULL)
+        {
+            printf("\nNo se puede abrir el archivo de la tabla de simbolo\n");
+            exit(1);
+        }
+        
+        while((fgets(buffer, BUFFER_SIZE, fptr)) != NULL)
+        {
+            pos = strstr(buffer, idToAssign);
+            if(pos != NULL)
+            {
+                printf("No se puede declarar una variable ya existente\n");
+                exit(1);
+            }
+        }
+
+        fclose(fptr);
+
+        if ((fptr = fopen("ts.txt", "a")) == NULL)
+        {
+            printf("\nNo se puede abrir el archivo de la tabla de simbolo\n");
+        }
+        
+        if(lenght != 0)
+        {
+            fprintf(fptr,"%-15s %-15s %-15s %-15d\n", idToAssign, "-", valueConverted, lenght);
+            lenght = 0;
+        } else {
+            fprintf(fptr,"%-15s %-15s %-15s %-15s\n", idToAssign, "-", valueConverted, "-");
+        }
+
+        fclose(fptr);
+    }    
+}
+
+void CheckExistingVariables()
+{
+    fptr = fopen("ts.txt", "r");
+    char *pos;         
+    int flag = 0;
+    if (fptr == NULL)
+    {
+        printf("\nNo se puede abrir el archivo de la tabla de simbolo\n");
+        exit(1);
     }
-    
+
+    while((fgets(buffer, BUFFER_SIZE, fptr)) != NULL)
+    {
+        char id[30], tipo[30], valor[30], longi[30], aux[30];
+        pos = strstr(buffer, idToAssign);
+
+        if(pos != NULL)
+        {
+            fseek(fptr, -70, SEEK_CUR);
+            fscanf(fptr, "%s %s %s %s", id, tipo, valor, longi);
+            flag++;
+
+            if(strcmp(valor, "-") != 0)
+            {
+                printf("No se puede modificar las constantes\n");
+                exit(1);
+            }
+
+            break;
+        }
+    }
+
+    if(flag == 0)
+    {
+        printf("La variable %s no se ha declarado previamente\n", idToAssign);
+        exit(1);
+    }
+
     fclose(fptr);
+
 }
 
 void SaveValue()
@@ -2402,4 +2569,244 @@ void ReadTree(struct node* tree)
         }    
         ReadTree(tree->right);
     }
+}
+
+void ReadTreeForAsm(struct node* tree)
+{    
+    if(tree != NULL)
+    {
+        ReadTreeForAsm(tree->left);
+    
+        if(strcmp(tree->data, "Display") == 0)
+        {
+            fprintf(fasm,"displayString %s\n", tree->left->data);
+        }
+
+        if(strcmp(tree->data, "GET") == 0)
+        {
+            fprintf(fasm,"GetInteger %s\n", tree->left->data);
+        }
+
+        if(strcmp(tree->data, "IF") == 0)
+        {
+            if(ValidateComp(tree->left->data) == 0)
+            {
+                fprintf(fasm,"FLD %s\n", tree->left->left->data);
+                fprintf(fasm,"FCOMP %s\n", tree->left->right->data);
+                fprintf(fasm,"FSTSW AX\n");
+                fprintf(fasm,"SAHF\n");
+            } else if(strcmp(tree->left->data, "L") == 0){
+                fprintf(fasm,"FLD %s\n", tree->left->right->left->data);
+                fprintf(fasm,"FCOMP %s\n", tree->left->right->right->data);
+                fprintf(fasm,"FSTSW AX\n");
+                fprintf(fasm,"SAHF\n");
+            } else if(strcmp(tree->left->data, "||") == 0 || strcmp(tree->left->data, "&&") == 0)
+            {
+                if(ValidateComp(tree->left->left->data) == 0)
+                {
+                    fprintf(fasm,"FLD %s\n", tree->left->left->left->data);
+                    fprintf(fasm,"FCOMP %s\n", tree->left->left->right->data);
+                    fprintf(fasm,"FSTSW AX\n");
+                    fprintf(fasm,"SAHF\n");
+                    fprintf(fasm,"%s end_if\n", op);
+                }
+                
+                if(ValidateComp(tree->left->right->data) == 0)
+                {
+                    fprintf(fasm,"FLD %s\n", tree->left->right->left->data);
+                    fprintf(fasm,"FCOMP %s\n", tree->left->right->right->data);
+                    fprintf(fasm,"FSTSW AX\n");
+                    fprintf(fasm,"SAHF\n");
+                }
+            }
+            else
+            { exit(1); }
+
+            if(strcmp(tree->right->data, "BODY") == 0)
+            {
+                fprintf(fasm,"%s else_part\n", op);
+                fprintf(fasm,"then_part:\n");
+            } else {
+                fprintf(fasm,"%s end_if\n", op);                
+            }
+        } else if(ValidateOp(tree->data) == 0)
+        {
+            fprintf(fasm,"FLD %s\n", tree->left->data);
+            fprintf(fasm,"FLD %s\n", tree->right->data);
+            fprintf(fasm,"%s\n", op);
+        } else if(strcmp(tree->data, "BODY") == 0)
+        {
+            fprintf(fasm,"else_part:\n");
+        } else if(strcmp(tree->data, "WHILE") == 0)
+        {
+            if(ValidateComp(tree->left->data) == 0)
+            {
+                fprintf(fasm,"begin_while:\n");
+                fprintf(fasm,"FLD %s\n", tree->left->left->data);
+                fprintf(fasm,"FCOMP %s\n", tree->left->right->data);
+                fprintf(fasm,"FSTSW AX\n");
+                fprintf(fasm,"SAHF\n");
+                fprintf(fasm,"%s end_while\n", op);
+            } else { exit(1); }
+        }
+
+        ReadTreeForAsm(tree->right);
+
+        if(strcmp(tree->data, ":=") == 0)
+        {
+            if(ValidateOp(tree->right->data) == 0)
+            {
+                fprintf(fasm,"FSTP %s\n", tree->left->data);
+                fprintf(fasm,"FFREE\n");
+            } else {
+                AsmAsig(tree);
+            }
+        } else if(strcmp(tree->data, "IF") == 0)
+        {
+            fprintf(fasm,"end_if:\n");
+        } else if(strcmp(tree->data, "WHILE") == 0)
+        {
+            fprintf(fasm,"JMP begin_while\n");
+            fprintf(fasm,"end_while:\n");
+        }
+    }
+}
+
+int ValidateOp(char *data)
+{
+    if(strcmp(data, "+") == 0)
+    {
+        strcpy(op, "FADD");
+        return 0;
+    }
+    
+    if(strcmp(data, "-") == 0)
+    {
+        strcpy(op, "FSUB");
+        return 0;
+    }
+    
+    if(strcmp(data, "*") == 0)
+    {
+        strcpy(op, "FMUL");
+        return 0;
+    }
+
+    if(strcmp(data, "/") == 0)
+    {
+        strcpy(op, "FDIV");
+        return 0;
+    }
+
+    return 1;
+}
+
+int ValidateComp(char *data)
+{
+    if(strcmp(data, ">") == 0)
+    {
+        strcpy(op, "JNA");
+        return 0;
+    }
+
+    if(strcmp(data, "<") == 0)
+    {
+        strcpy(op, "JG");
+        return 0;
+    }
+
+    if(strcmp(data, "<=") == 0)
+    {
+        strcpy(op, "JG");
+        return 0;
+    }
+
+    if(strcmp(data, "==") == 0)
+    {
+        strcpy(op, "JNE");
+        return 0;
+    }
+
+    return 1;
+}
+
+void AsmAsig(struct node* tree)
+{
+    fprintf(fasm,"FILD %s\n", tree->right->data);
+    fprintf(fasm,"FISTP %s\n", tree->left->data);
+}
+
+void genera_asm()
+{
+    GeneraHeader();
+    GeneraVariables();
+    GeneraCode();
+}
+
+void GeneraHeader()
+{
+    fasm = fopen("Final.asm", "w");
+    
+    if (fasm == NULL)
+    {
+        printf("\nNo se puede abrir el archivo assembler\n");
+        exit(1);
+    }
+
+    fprintf(fasm,"include macros2.asm\n");
+    fprintf(fasm,"include number.asm\n\n");
+    fprintf(fasm,".MODEL LARGE\n.386\n.STACK200h\n\n");
+    fclose(fasm);    
+}
+
+void GeneraVariables()
+{
+    fptr = fopen("ts.txt", "r");
+    fasm = fopen("Final.asm", "a");
+
+    if (fptr == NULL || fasm == NULL)
+    {
+        printf("\nError al abrir algun archivo\n");
+        exit(1);
+    }
+
+    fprintf(fasm, ".DATA\n\n");
+
+    while((fgets(buffer, BUFFER_SIZE, fptr)) != NULL)
+    {
+        char id[30], tipo[30], valor[30], longi[30], aux[30];
+        fscanf(fptr, "%s %s %s %s", id, tipo, valor, longi);
+        if(strcmp(aux, id) == 0)
+            continue;
+        strcpy(aux, id);
+        
+        if(strcmp(valor, "-") == 0)
+            strcpy(valor, "?");
+
+        fprintf(fasm,"%-10s %-10s %-10s\n", id, "dd", valor);
+    }
+
+    fprintf(fasm, "\n");
+
+    fclose(fasm);    
+    fclose(fptr);
+}
+
+void GeneraCode()
+{
+    fasm = fopen("Final.asm", "a");
+    
+    if (fasm == NULL)
+    {
+        printf("\nNo se puede abrir el archivo assembler\n");
+        exit(1);
+    }
+
+    fprintf(fasm,".CODE\n\nmov AX, @DATA\nmov DS, AX\nmov es,ax\n\n");
+
+    ReadTreeForAsm(progptr);
+
+    fprintf(fasm,"\nmov ax, 4c00h\nint 21h\nEND");
+
+    fclose(fasm);    
 }

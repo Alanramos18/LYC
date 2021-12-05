@@ -1,16 +1,16 @@
-num := 9 
-may := 18 
-men := 1 
-men := 1 
-num > 8 IF may Display ELSE men Display 
-num == 0 || num == 5 WHILE num := 18 
-temp = 1 FOR temp <= 6 WHILE-FOR nombre Display BODYWHILE temp = temp + 2 
-@num = 1 + 1 
-@max = 1 
-@aux = 2 
-@aux > @max IF @max = @aux 
 
-@aux = temp 
-@aux > @max IF-EQU @max = @aux 
-@num == @max IF True Return 
-False Return IF nombre GET 
+alan := "alan" 
+valor := 18 
+num := 88 
+num > 8 && num < 10 IF "El numero es mayor" Display BODY "El numero es menor" Display 
+valor == 20 || valor == 30 IF nombre := "holis" 
+num == 0 WHILE num := 18 
+temp := 1 FOR temp <= 6 WHILE num := 18 BODYWHILE temp := temp + 2 
+@num := 1 + 1 
+@max := 1 
+@aux := 2 
+@aux > @max IF @max := @aux 
+@aux := valor 
+@aux > @max IF @max := @aux 
+@num == @max IF @true := 1 BODY @true := 0 
+@true == 0 IF num GET 

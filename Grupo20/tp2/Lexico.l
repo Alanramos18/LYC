@@ -43,6 +43,7 @@
 #define AND 292
 #define OR 293
 #define REA 294
+#define CONSTANT 299
 
 void CheckStringLenght(char *);
 void CheckInt(int num);
@@ -62,6 +63,7 @@ INT         {DIGITO}+
 REAL        {DIGITO}*"."{DIGITO}*
 
 %%
+"const"         return (CONSTANT);
 "NOT"           return (NOT);
 "AND"           return (AND);
 "OR"            return (OR);
@@ -99,7 +101,7 @@ REAL        {DIGITO}*"."{DIGITO}*
 "=="            return (OP_IGU);
 "!="            return (OP_DIST);
 ";"             return (FIN);
-{STRING}        {CheckStringLenght(yytext); return(STRING);};
+{STRING}        {CheckStringLenght(yytext); sscanf(yytext, "%[^|]|%s", yylval.name); return(STRING);};
 {INT}           {CheckInt(atoi(yytext)); yylval.num = atoi(yytext); return (INT);};
 {REAL}          {CheckReal(yytext); return (REA);};
 {ID}            {sscanf(yytext, "%s", yylval.name); return (ID);};

@@ -1,3 +1,5 @@
 NOMBRE          TIPODATO        VALOR           LONGITUD       
 nombre          string          -               -              
-num             integer         0               -              
+num             integer         -               -              
+alan            -               "alan"          6              
+valor           -               18              -              
