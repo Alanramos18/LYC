@@ -72,6 +72,7 @@ struct node* EPtr;
 struct node* create_leaf(char data[255]);
 struct node* create_node(char data[255], struct node* right, struct node* left);
 void ReadTree(struct node* tree);
+void CheckExistingVariables();
 
 void genera_asm();
 void GeneraHeader();
@@ -90,7 +91,7 @@ int ValidateOp(char *data);
 }
 
 %token STRING INT ID WHILE PARAB PARCE CORAB CORCE OP_MAY IF ELSE OP_AS DIM AS COMA STRINGT INTEGER REAL CUAAB CUACE
-%token FOR TO NEXT EQUMAX EQUMIN FIN OP_MEN OP_MAYIGU OP_MENIGU OP_IGU OP_DIST DISPLAY GET NOT AND OR REA MAS MENOS POR DIV
+%token FOR TO NEXT EQUMAX EQUMIN FIN OP_MEN OP_MAYIGU OP_MENIGU OP_IGU OP_DIST DISPLAY GET NOT AND OR REA MAS MENOS POR DIV CONSTANT
 
 %type <name> ID
 %type <name> STRING
@@ -137,7 +138,7 @@ line: W         {lineptr = Wptr;}
 | I             {lineptr = selPtr}
 | A FIN         {lineptr = Aptr;}
 | DIS FIN       {lineptr = disPtr;}
-| GET ID FIN    {lineptr = create_node("GET", NULL, create_leaf($2));}
+| GET ID FIN    {strcpy(idToAssign, $2); CheckExistingVariables(); lineptr = create_node("GET", NULL, create_leaf($2));}
 | D FIN         {CheckDim();}
 | F             {lineptr = Fptr};
 
@@ -173,16 +174,35 @@ BODY: CORAB {body = 1;} lines {body = 0;} CORCE;
 
 
 //ASIGNACIONES
-A: ID OP_AS V {
-
-    strcpy(idToAssign, $1); SaveInFile(0); Aptr = create_node(":=", Vptr, create_leaf($1));
+A: CONSTANT ID OP_AS V { strcpy(idToAssign, $2); SaveInFile(0); Aptr = create_node(":=", Vptr, create_leaf($2)); }
+| CONSTANT ID OP_AS STRING { 
+    strcpy(idToAssign, $2); strcpy(valueConverted, $4); lenght = strlen(valueConverted); SaveInFile(0); Aptr = create_node(":=", create_leaf(valueConverted), create_leaf($2)); 
+}
+| ID OP_AS V {
+    strcpy(idToAssign, $1); CheckExistingVariables(); Aptr = create_node(":=", Vptr, create_leaf($1));
 }
 | ID OP_AS STRING {
-    strcpy(idToAssign, $1); strcpy(valueConverted, $3); lenght = strlen(valueConverted); SaveInFile(0);
+    strcpy(idToAssign, $1); CheckExistingVariables(); Aptr = create_node(":=", create_leaf($3), create_leaf($1));
 };
 
 //DISPLAY
-DIS: DISPLAY STRING                 { disPtr = create_node("Display", NULL, create_leaf($2));}
+DIS: DISPLAY STRING                 { 
+                    int counter = 0;
+                    int x = 0;
+                    strcpy(valueConverted, $2);
+                    for(x = 0; x < 20; x++)
+                    {
+                        if(valueConverted[x] == '"')
+                        {
+                            counter++;
+                        }
+
+                        if(counter == 2)
+                        {
+                            valueConverted[++x] = '\0';
+                            break; 
+                        }
+                    } disPtr = create_node("Display", NULL, create_leaf(valueConverted));}
 | DISPLAY ID                        { disPtr = create_node("Display", NULL, create_leaf($2));};
 
 //DECLARACIONES
@@ -411,6 +431,48 @@ void SaveInFile(int isDim)
     }    
 }
 
+void CheckExistingVariables()
+{
+    fptr = fopen("ts.txt", "r");
+    char *pos;         
+    int flag = 0;
+    if (fptr == NULL)
+    {
+        printf("\nNo se puede abrir el archivo de la tabla de simbolo\n");
+        exit(1);
+    }
+
+    while((fgets(buffer, BUFFER_SIZE, fptr)) != NULL)
+    {
+        char id[30], tipo[30], valor[30], longi[30], aux[30];
+        pos = strstr(buffer, idToAssign);
+
+        if(pos != NULL)
+        {
+            fseek(fptr, -70, SEEK_CUR);
+            fscanf(fptr, "%s %s %s %s", id, tipo, valor, longi);
+            flag++;
+
+            if(strcmp(valor, "-") != 0)
+            {
+                printf("No se puede modificar las constantes\n");
+                exit(1);
+            }
+
+            break;
+        }
+    }
+
+    if(flag == 0)
+    {
+        printf("La variable %s no se ha declarado previamente\n", idToAssign);
+        exit(1);
+    }
+
+    fclose(fptr);
+
+}
+
 void SaveValue()
 {
     fptr = fopen("ts.txt", "r");
@@ -502,6 +564,16 @@ void ReadTreeForAsm(struct node* tree)
     {
         ReadTreeForAsm(tree->left);
     
+        if(strcmp(tree->data, "Display") == 0)
+        {
+            fprintf(fasm,"displayString %s\n", tree->left->data);
+        }
+
+        if(strcmp(tree->data, "GET") == 0)
+        {
+            fprintf(fasm,"GetInteger %s\n", tree->left->data);
+        }
+
         if(strcmp(tree->data, "IF") == 0)
         {
             if(ValidateComp(tree->left->data) == 0)

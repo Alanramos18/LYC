@@ -1,35 +1,35 @@
+*/ Declaro dos variables porque... no hay porque /*
 dim [nombre, num] as [string, integer];
 
-may := 18;
-men := 1;
+const alan := "alan";
+const valor := 18;
 
-alan := "alan";
-
-*/ Declaro dos variables porque... no hay porque /*
-if(men == 20 OR men == 30)
-{
-	enero := 18;
-}
+num := 88;
 
 if(num > 8 AND num < 10)
 {
-	mayo := 12;
+	DISPLAY "El numero es mayor";
 }
 else
 {
-	julio := 18;
+	DISPLAY "El numero es menor";
+}
+
+if(valor == 20 OR valor == 30)
+{
+	nombre := "holis";
 }
 
 while(num == 0)
 {
-	oct := 18;
+	num:= 18;
 }
 
 for temp := 1 to 6 [2]
-	slo := 18;
+	num := 18;
 next temp
 
-if(EQUMAX(1+1; [1, 2, temp]))
+if(EQUMAX(1+1; [1, 2, valor]))
 {
-	sla := 18;
+	GET num;
 }

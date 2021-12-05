@@ -79,7 +79,8 @@
      MAS = 295,
      MENOS = 296,
      POR = 297,
-     DIV = 298
+     DIV = 298,
+     CONSTANT = 299
    };
 #endif
 /* Tokens.  */
@@ -124,6 +125,7 @@
 #define MENOS 296
 #define POR 297
 #define DIV 298
+#define CONSTANT 299
 
 
 
@@ -133,7 +135,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 87 "Sintactico.y"
+#line 88 "Sintactico.y"
 
     char name[20];
     int num;
@@ -141,7 +143,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 145 "y.tab.h"
+#line 147 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

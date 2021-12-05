@@ -1,5 +1,0 @@
-NOMBRE          TIPODATO        VALOR           LONGITUD       
-nombre          string          -               -              
-num             integer         -               -              
-alan            -               "alan"          6              
-valor           -               18              -              

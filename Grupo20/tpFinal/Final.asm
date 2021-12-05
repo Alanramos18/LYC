@@ -9,16 +9,8 @@ include number.asm
 
 nombre     dd         ?         
 num        dd         ?         
-num2       dd         9         
-may        dd         18        
-men        dd         1         
-alan       dd         alan      
-enero      dd         18        
-mayo       dd         12        
-julio      dd         18        
-oct        dd         18        
-slo        dd         18        
-sla        dd         18        
+alan       dd         "alan"    
+valor      dd         18        
 
 .CODE
 
@@ -26,27 +18,12 @@ mov AX, @DATA
 mov DS, AX
 mov es,ax
 
-FILD 9
-FISTP num2
+FILD "alan"
+FISTP alan
 FILD 18
-FISTP may
-FILD 1
-FISTP men
-FILD 1
-FISTP men
-FLD men
-FCOMP 20
-FSTSW AX
-SAHF
-JNE end_if
-FLD men
-FCOMP 30
-FSTSW AX
-SAHF
-JNE end_if
-FILD 18
-FISTP enero
-end_if:
+FISTP valor
+FILD 88
+FISTP num
 FLD num
 FCOMP 8
 FSTSW AX
@@ -58,11 +35,22 @@ FSTSW AX
 SAHF
 JG else_part
 then_part:
-FILD 12
-FISTP mayo
+displayString "El numero es mayor"
 else_part:
-FILD 18
-FISTP julio
+displayString "El numero es menor"
+end_if:
+FLD valor
+FCOMP 20
+FSTSW AX
+SAHF
+JNE end_if
+FLD valor
+FCOMP 30
+FSTSW AX
+SAHF
+JNE end_if
+FILD "holis"
+FISTP nombre
 end_if:
 begin_while:
 FLD num
@@ -71,7 +59,7 @@ FSTSW AX
 SAHF
 JNE end_while
 FILD 18
-FISTP oct
+FISTP num
 JMP begin_while
 end_while:
 FILD 1
@@ -83,7 +71,7 @@ FSTSW AX
 SAHF
 JG end_while
 FILD 18
-FISTP slo
+FISTP num
 FLD temp
 FLD 2
 FADD
@@ -108,7 +96,7 @@ JNA end_if
 FILD @aux
 FISTP @max
 end_if:
-FILD temp
+FILD valor
 FISTP @aux
 FLD @aux
 FCOMP @max
@@ -135,8 +123,7 @@ FCOMP 0
 FSTSW AX
 SAHF
 JNE end_if
-FILD 18
-FISTP sla
+GetInteger num
 end_if:
 
 mov ax, 4c00h
